@@ -1,0 +1,8 @@
+INSERT INTO ACCOUNTS (id, account_number, amount)
+VALUES(1, '123456789', 100);
+INSERT INTO ACCOUNTS (id, account_number, amount)
+VALUES(2, '789456123', 1000);
+INSERT INTO ACCOUNTS (id, account_number, amount)
+VALUES(3, '852963741', 10000);
+
+CREATE SEQUENCE ACCOUNTS_SEQUENCE_ID START WITH (select max(id) + 1 from ACCOUNTS);

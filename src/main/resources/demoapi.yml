@@ -1,22 +1,62 @@
 openapi: 3.0.3
 info:
-  version: 1.0.0-SNAPSHOT
+  version: 1.0.0
   title: Demo OpenAPI
   description: Demo API realized with OpenAPI
 servers:
-  - url: https://testenvironment.org/api/v1
-  - url: https://prodenvironment.org/api/v1
+  - url: http://localhost:8080/
 tags:
   - name: accounts
     description: Operations between bank accounts
 paths:
-  /account:
+  /keepalive:
+    get:
+      tags:
+        - accounts
+      summary: Account Keepalive
+      description: Keepalive route for the account com.gala.gaetano.openapidemo.controller
+      operationId: keepAlive
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+  /:
+    get:
+      tags:
+        - accounts
+      summary: Retrieve accounts
+      description: Get all the account objects
+      operationId: getAccounts
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accounts'
+        404:
+          description: No data found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoDataFoundError'
+  /{accountId}:
     get:
       tags:
         - accounts
       summary: Get account information
       description: Get account information using account number
       operationId: getAccount
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: account id to get the account
       responses:
         200:
           description: Success
@@ -25,17 +65,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Account'
         404:
-          description: Account not found
+          description: No data found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountNotFoundError'
-  /account/deposit:
+                $ref: '#/components/schemas/NoDataFoundError'
+    put:
+      tags:
+        - accounts
+      summary: Update account balance
+      description: Update the account information using the account number
+      operationId: putAccount
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: account id to get the account
+      requestBody:
+        description: Account number and the amount to updated the account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Amount'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        404:
+          description: No data found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoDataFoundError'
+    delete:
+      tags:
+        - accounts
+      summary: Delete an account
+      description: Delete an account by accountId
+      operationId: deleteAccount
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: account id to get the account
+      responses:
+        204:
+          description: Deleted
+        404:
+          description: No data found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoDataFoundError'
+  /deposit:
     post:
       tags:
         - accounts
       summary: Deposit amount to account
-      description: Initiates a deposit operation of a desired amount to the account specified
+      description: Initiates a deposit operation of a the amount to the account specified
       operationId: depositToAccount
       requestBody:
         description: Account number and desired amount to deposit
@@ -48,27 +143,44 @@ paths:
         204:
           description: Success
         404:
-          description: Account not found
+          description: No data found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountNotFoundError'
+                $ref: '#/components/schemas/NoDataFoundError'
 components:
   schemas:
     Account:
       type: object
       properties:
-        balance:
+        accountNumber:
+          type: string
+        amount:
           type: number
-    AccountNotFoundError:
+    Accounts:
+      type: array
+      items:
+        $ref: "#/components/schemas/Account"
+    Amount:
       type: object
       properties:
-        message:
-          type: string
+        amount:
+          type: number
     DepositRequest:
       type: object
       properties:
         accountNumber:
           type: string
-        depositAmount:
+        amount:
           type: number
+    NoDataFoundError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
