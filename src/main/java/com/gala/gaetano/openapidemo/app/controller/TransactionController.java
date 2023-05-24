@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping(value = "/api/v2/transaction/")
@@ -44,14 +48,25 @@ public class TransactionController{
     }
 
     @GetMapping()
-    public ResponseEntity<List<Transaction>> getTransactions() {
+    public ResponseEntity<CollectionModel<Transaction>> getTransactions() {
 
         List<Transaction> transactionList = transactionService.retrieveAllTransactions();
 
         if(transactionList == null || transactionList.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
 
-        return new ResponseEntity<>(transactionList, HttpStatus.OK);
+        transactionList.forEach(transaction -> {
+            Link selfLink = linkTo(TransactionController.class).slash("account").slash(transaction.getAccount().getAccountNumber()).withSelfRel();
+            transaction.add(selfLink);
+        });
+
+        transactionList.forEach(transaction -> {
+            Link selfLink = linkTo(AccountController.class).slash(transaction.getAccount().getAccountNumber()).withSelfRel();
+            transaction.add(selfLink);
+        });
+
+        CollectionModel<Transaction> result = CollectionModel.of(transactionList);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{transactionId}")
@@ -62,6 +77,8 @@ public class TransactionController{
 
         if (transaction == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+
+
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
