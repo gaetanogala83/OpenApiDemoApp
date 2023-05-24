@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface AccountRepository extends CrudRepository<Account, Integer> {
 
-    Optional<Account> findClientByAccountNumber(String accountNumber);
+    Optional<Account> findAccountByAccountNumber(String accountNumber);
 }

@@ -42,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NoDataFoundError'
+                $ref: '#/components/schemas/BaseError'
   /{accountId}:
     get:
       tags:
@@ -69,7 +69,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NoDataFoundError'
+                $ref: '#/components/schemas/BaseError'
     put:
       tags:
         - accounts
@@ -97,12 +97,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Account'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
         404:
           description: No data found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NoDataFoundError'
+                $ref: '#/components/schemas/BaseError'
     delete:
       tags:
         - accounts
@@ -117,37 +123,37 @@ paths:
           required: true
           description: account id to delete the account
       responses:
-        204:
+        200:
           description: Deleted
         404:
           description: No data found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NoDataFoundError'
+                $ref: '#/components/schemas/BaseError'
   /deposit:
     post:
       tags:
         - accounts
-      summary: Deposit amount to account
-      description: Initiates a deposit operation of a the amount to the account specified
-      operationId: depositToAccount
+      summary: Create a new account
+      description: Create a new account
+      operationId: createAccount
       requestBody:
-        description: Account number and desired amount to deposit
+        description: Useful data to create a new account
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DepositRequest'
+              $ref: '#/components/schemas/NewAccountRequest'
         required: true
       responses:
-        204:
-          description: Success
-        404:
-          description: No data found
+        201:
+          description: Created
+        400:
+          description: BadRequest
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NoDataFoundError'
+                $ref: '#/components/schemas/BaseError'
 components:
   schemas:
     Account:
@@ -166,21 +172,18 @@ components:
       properties:
         amount:
           type: number
-    DepositRequest:
+    NewAccountRequest:
       type: object
       properties:
         accountNumber:
           type: string
         amount:
           type: number
-    NoDataFoundError:
+    BaseError:
       type: object
       required:
         - code
-        - message
       properties:
         code:
           type: integer
           format: int32
-        message:
-          type: string

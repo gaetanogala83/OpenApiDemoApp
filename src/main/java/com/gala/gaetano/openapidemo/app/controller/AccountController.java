@@ -19,7 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/v1/account/")
 @Slf4j
-public class AccountController implements AccountsApi {
+public class AccountController implements AccountsApi{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
 
@@ -39,33 +39,6 @@ public class AccountController implements AccountsApi {
         return Optional.empty();
     }
 
-    @Override
-    public ResponseEntity<Void> deleteAccount(String accountId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Void> depositToAccount(DepositRequest body) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Account> getAccount(String accountId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Accounts> getAccounts(){
-        LOGGER.info("Calling the getAccounts API!");
-
-        Accounts accounts = accountService.retrieveAllAccounts();
-/*
-
-        if(accounts == null)
-            throw new NoDataException((new NoDataFoundError()).code(HttpStatus.NOT_FOUND.value()).message("No accounts are available"));
-*/
-        return new ResponseEntity<Accounts>(accounts, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity<String> keepAlive() {
@@ -76,8 +49,77 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
+    public ResponseEntity<Account> getAccount(String accountId) {
+
+        if(accountId.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        Account account = accountService.retrieveAccountById(accountId);
+
+        if(account == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Accounts> getAccounts() {
+        LOGGER.info("Calling the getAccounts API!");
+
+        Accounts accounts = accountService.retrieveAllAccounts();
+
+        if (accounts == null || accounts.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> createAccount(NewAccountRequest body) {
+
+        if(body.getAccountNumber() == null || body.getAmount() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        com.gala.gaetano.openapidemo.app.model.Account accountToSave = new com.gala.gaetano.openapidemo.app.model.Account();
+        accountToSave.setAccountNumber(body.getAccountNumber());
+        accountToSave.setAmount(body.getAmount());
+
+        com.gala.gaetano.openapidemo.app.model.Account savedAccount = accountService.saveAccount(accountToSave);
+
+        if(savedAccount == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        return ResponseEntity.status(HttpStatus.CREATED.value()).build();
+    }
+
+    @Override
     public ResponseEntity<Account> putAccount(String accountId, Amount body) {
-        return null;
+
+        if(accountId == null || body.getAmount() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        com.gala.gaetano.openapidemo.app.model.Account accountToUpdate = new com.gala.gaetano.openapidemo.app.model.Account();
+        accountToUpdate.setAccountNumber(accountId);
+        accountToUpdate.setAmount(body.getAmount());
+
+        Account retrievedAccount = accountService.updateAccount(accountToUpdate);
+
+        if(retrievedAccount == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+
+        return new ResponseEntity<>(retrievedAccount, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteAccount(String accountId) {
+
+        if(accountId == null || accountId.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        if(!accountService.deleteAccountById(accountId))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+
+        return ResponseEntity.status(HttpStatus.OK.value()).build();
     }
 
 }

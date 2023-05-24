@@ -39,20 +39,29 @@ public class AccountService {
         return accounts;
     }
 
-    public Account retrieveAccountById(Integer id){
+    public com.gala.gaetano.openapidemo.api.model.Account retrieveAccountById(String accountId){
 
-        Optional<Account> clientOpt = accountRepository.findById(id);
+        Optional<Account> clientOpt = accountRepository.findAccountByAccountNumber(accountId);
 
-        return clientOpt.orElse(null);
+        if(clientOpt.isEmpty())
+            return null;
+
+        com.gala.gaetano.openapidemo.api.model.Account accountToReturn = new com.gala.gaetano.openapidemo.api.model.Account();
+
+        accountToReturn.setAccountNumber(clientOpt.get().getAccountNumber());
+        accountToReturn.setAmount(clientOpt.get().getAmount());
+
+        return accountToReturn;
+
     }
 
-    public Boolean deleteAccountById(Integer id){
+    public Boolean deleteAccountById(String accountId){
 
-        Account client = retrieveAccountById(id);
-        if(client == null)
+        Optional<Account> accountOpt = accountRepository.findAccountByAccountNumber(accountId);
+        if(accountOpt.isEmpty())
             return false;
 
-        accountRepository.deleteById(id);
+        accountRepository.deleteById(accountOpt.get().getId());
 
         return true;
     }
@@ -62,7 +71,7 @@ public class AccountService {
         if(accountToSave.getAccountNumber() == null)
             return null;
 
-        Optional<Account> checked = accountRepository.findClientByAccountNumber(accountToSave.getAccountNumber());
+        Optional<Account> checked = accountRepository.findAccountByAccountNumber(accountToSave.getAccountNumber());
 
         if(checked.isPresent())
             return null;
@@ -70,24 +79,31 @@ public class AccountService {
         return accountRepository.save(accountToSave);
     }
 
-    public Account updateAccount(Account account){
+    public com.gala.gaetano.openapidemo.api.model.Account updateAccount(Account account){
 
         if(account.getAccountNumber() == null)
             return null;
 
-        Optional<Account> retrievedAccount = accountRepository.findClientByAccountNumber(account.getAccountNumber());
+        Optional<Account> retrievedAccount = accountRepository.findAccountByAccountNumber(account.getAccountNumber());
 
         if(retrievedAccount.isEmpty())
             return null;
 
-        Account accountToUpdate = retrievedAccount.get();
-        if(accountToUpdate.getAmount() != null){
-            BigDecimal newAmount = accountToUpdate.getAmount().add(account.getAmount());
-            accountToUpdate.setAmount(newAmount);
-        }else
-            accountToUpdate.setAmount(account.getAmount());
+        BigDecimal retrievedAmount = retrievedAccount.get().getAmount();
+        if(retrievedAmount != null){
+            retrievedAccount.get().setAmount(retrievedAmount.add(account.getAmount()));
+        }else {
+            retrievedAccount.get().setAmount(account.getAmount());
+        }
 
-        return accountRepository.save(accountToUpdate);
+        Account updatedAccount = accountRepository.save(retrievedAccount.get());
+
+        com.gala.gaetano.openapidemo.api.model.Account accountToUpdate = new com.gala.gaetano.openapidemo.api.model.Account();
+
+        accountToUpdate.setAccountNumber(updatedAccount.getAccountNumber());
+        accountToUpdate.setAmount(updatedAccount.getAmount());
+
+        return accountToUpdate;
     }
 
 

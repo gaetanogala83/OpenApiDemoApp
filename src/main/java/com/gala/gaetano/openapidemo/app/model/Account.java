@@ -17,7 +17,7 @@ public class Account {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACCOUNTS_SEQUENCE")
     @Getter
     @Setter
-    private String id;
+    private Integer id;
     @Getter
     @Setter
     private String accountNumber;
