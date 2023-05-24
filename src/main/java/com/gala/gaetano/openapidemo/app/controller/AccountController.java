@@ -41,12 +41,17 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteAccount() {
+    public ResponseEntity<Void> deleteAccount(String accountId) {
         return null;
     }
 
     @Override
     public ResponseEntity<Void> depositToAccount(DepositRequest body) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Account> getAccount(String accountId) {
         return null;
     }
 
@@ -60,11 +65,12 @@ public class AccountController implements AccountsApi {
         LOGGER.info("Calling the getAccounts API!");
 
         Accounts accounts = accountService.retrieveAllAccounts();
+/*
 
         if(accounts == null)
             throw new NoDataException((new NoDataFoundError()).code(HttpStatus.NOT_FOUND.value()).message("No accounts are available"));
-
-        return new ResponseEntity<>(accounts, HttpStatus.OK);
+*/
+        return new ResponseEntity<Accounts>(accounts, HttpStatus.OK);
     }
 
     @Override
@@ -76,9 +82,8 @@ public class AccountController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<Account> putAccount(Amount body) {
+    public ResponseEntity<Account> putAccount(String accountId, Amount body) {
         return null;
     }
-
 
 }

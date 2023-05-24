@@ -115,7 +115,7 @@ paths:
           schema:
             type: string
           required: true
-          description: account id to get the account
+          description: account id to delete the account
       responses:
         204:
           description: Deleted
