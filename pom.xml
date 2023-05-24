@@ -91,10 +91,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-        </dependency>-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -139,13 +139,12 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.basedir}/src/main/resources/demoapi.yml
+                                ${project.basedir}/src/main/resources/accountapi.yml
                             </inputSpec>
                             <language>spring</language>
                             <apiPackage>com.gala.gaetano.openapidemo.api</apiPackage>
                             <modelPackage>com.gala.gaetano.openapidemo.api.model</modelPackage>
                             <configOptions>
-                                <dateLibrary>java8</dateLibrary>
                                 <interfaceOnly>true</interfaceOnly>
                                 <defaultInterfaces>false</defaultInterfaces>
                                 <notNullJacksonAnnotation>false</notNullJacksonAnnotation>

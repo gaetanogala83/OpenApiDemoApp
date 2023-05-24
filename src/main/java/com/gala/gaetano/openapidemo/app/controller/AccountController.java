@@ -17,28 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/v1/account/")
+@RequestMapping(value = "/api/v2/account/")
 @Slf4j
 public class AccountController implements AccountsApi{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private AccountService accountService;
-
-    @Override
-    public Optional<ObjectMapper> getObjectMapper() {
-        return Optional.of(objectMapper);
-    }
-
-    @Override
-    public Optional<HttpServletRequest> getRequest() {
-        return Optional.empty();
-    }
-
 
     @Override
     public ResponseEntity<String> keepAlive() {
