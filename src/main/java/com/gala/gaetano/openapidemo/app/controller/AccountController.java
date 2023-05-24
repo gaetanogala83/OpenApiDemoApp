@@ -3,7 +3,6 @@ package com.gala.gaetano.openapidemo.app.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gala.gaetano.openapidemo.api.AccountsApi;
 import com.gala.gaetano.openapidemo.api.model.*;
-import com.gala.gaetano.openapidemo.app.exception.NoDataException;
 import com.gala.gaetano.openapidemo.app.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -52,11 +51,6 @@ public class AccountController implements AccountsApi {
 
     @Override
     public ResponseEntity<Account> getAccount(String accountId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Account> getAccount() {
         return null;
     }
 
