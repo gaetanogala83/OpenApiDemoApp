@@ -1,4 +1,6 @@
-Caso di studio di esempio da implementare assieme il 25/05:
+ITS - APULIA DIGITAL MAKER - 23-24/07/2024
+
+Caso di studio di esempio da implementare assieme il 23/07:
 Creare un microservizio di gestione di account bancari.
 In particolar modo il servizio dovrà 
 1. ritornare tutti gli account con i relativi balance
@@ -21,7 +23,7 @@ id, data, importo
 all'aggiunta di una transazione, il balance deve essere aggiornato
 
 
-Caso di studio per l'esercitazione del 26/05 pomeriggio:
+Caso di studio per l'esercitazione del 24/07 mattina:
 La segreteria studenti ha necessità di un microservizio che consenta la gestione degli
 studenti.Questi i dati da gestiore:
 1. matricola
